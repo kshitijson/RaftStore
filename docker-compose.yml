@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+  raft-node-1:
+    build: .
+    container_name: raft-node-1
+    ports:
+      - "50051:50051"
+    environment:
+      - NODE_ID=1
+      - NODE_PORT=50051
+      - PEERS=2@raft-node-2:50052,3@raft-node-3:50053,4@raft-node-4:50054
+      - SELF_ADDR=raft-node-1:50051
+    volumes:
+      - /home/kshitij/raft-data/node-1:/app/data
+    networks:
+      - etcd-network
+
+  raft-node-2:
+    build: .
+    container_name: raft-node-2
+    ports:
+      - "50052:50052"
+    environment:
+      - NODE_ID=2
+      - NODE_PORT=50052
+      - PEERS=1@raft-node-1:50051,3@raft-node-3:50053,4@raft-node-4:50054
+      - SELF_ADDR=raft-node-2:50052
+    volumes:
+      - /home/kshitij/raft-data/node-2:/app/data
+    networks:
+      - etcd-network
+
+  raft-node-3:
+    build: .
+    container_name: raft-node-3
+    ports:
+      - "50053:50053"
+    environment:
+      - NODE_ID=3
+      - NODE_PORT=50053
+      - PEERS=1@raft-node-1:50051,2@raft-node-2:50052,4@raft-node-4:50054
+      - SELF_ADDR=raft-node-3:50053
+    volumes:
+      - /home/kshitij/raft-data/node-3:/app/data
+    networks:
+      - etcd-network
+  
+  raft-node-4:
+    build: .
+    container_name: raft-node-4
+    ports:
+      - "50054:50054"
+    environment:
+      - NODE_ID=4
+      - NODE_PORT=50054
+      - PEERS=1@raft-node-1:50051,2@raft-node-2:50052,3@raft-node-3:50053
+      - SELF_ADDR=raft-node-4:50054
+    volumes:
+      - /home/kshitij/raft-data/node-4:/app/data
+    networks:
+      - etcd-network
+
+networks:
+  etcd-network:
+    driver: bridge

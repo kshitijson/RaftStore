@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package raft;
+option go_package = "raft/raftpb";
+
+service RaftService {
+    // Election
+    rpc RequestVote (RequestVoteRequest) 
+        returns (RequestVoteResponse);
+
+    // HeartBeat + log Replication
+    rpc AppendEntries (AppendEntriesRequest) 
+        returns (AppendEntriesResponse);
+}
+
+
+/* ---------- RequestVote ------------- */
+
+message RequestVoteRequest {
+    int32 term = 1;
+    int32 candidate_id = 2;
+    int32 last_log_index = 3;
+    int32 last_log_term = 4;
+}
+
+message RequestVoteResponse {
+    int32 term = 1;
+    bool vote_granted = 2;
+}
+
+
+/* ---------- AppendEntries (Heartbeat) ----------- */
+
+message LogEntry {
+    int32 term = 1;
+    int32 index = 2;
+    bytes command = 3;
+}
+
+message AppendEntriesRequest {
+    int32 term = 1;
+    int32 leader_id = 2;
+
+    int32 prev_log_index = 3;
+    int32 prev_log_term = 4;
+
+    repeated LogEntry entries = 5;
+
+    int32 leader_commit = 6;
+}
+
+message AppendEntriesResponse {
+    int32 term = 1;
+    bool success = 2;
+}
+
+
+/* ---------- Key-Value Pair Service ----------- */
+service KVService {
+    rpc Put (PutRequest) 
+        returns (PutResponse);
+
+    rpc Get (GetRequest) 
+        returns (GetResponse);
+}
+
+message PutRequest {
+    string key = 1;
+    string value = 2;
+}
+
+message PutResponse {
+    bool success = 1;
+    string LeaderAddr = 2;
+}
+
+message GetRequest {
+    string key = 1;
+}
+
+message GetResponse {
+    string value = 1;
+    string LeaderAddr = 2;
+}
