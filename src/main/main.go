@@ -60,6 +60,7 @@ func main() {
 	fmt.Println("Port: ", port)
 	fmt.Println("Peers: ", peers)
 
+	//* Form the current Node
 	node := &raft.Node{
 		Id:          id,
 		State:       raft.Follower,
@@ -79,6 +80,7 @@ func main() {
 	node.KV = &raft.KVStore{
 		Data: make(map[string]string),
 	}
+
 	// Dummy Entry
 	node.Log = []raft.LogEntry{
 		{Term: 0, Index: 0, Command: []byte("init")},
@@ -91,6 +93,7 @@ func main() {
 		FilePath: "/app/data/wal.json",
 	}
 	
+	// Load the Storage if node is restarted
 	state, err := node.Storage.Load()
 	if err == nil {
 		node.CurrentTerm = state.Term
@@ -99,18 +102,20 @@ func main() {
 		node.CommitIndex = state.CommitIndex
 	}
 	
+	// populate all the peers of the network and their clients
 	for _, peer := range peers {
 		node.PeerAddrMap[peer.ID] = peer.Addr
 		node.Clients[peer.ID] = rpc.NewRaftClient(peer.Addr)
 	}
 	
+	// Start the GRPC server
 	rpc.StartGRPCServer(node, ":" + port)
 
 	time.Sleep(2 * time.Second) // allow all nodes to boot
 	
 	go node.Run()
 	
-	
+	// block the main idefinitely
 	select {}
 }
 
