@@ -32,6 +32,7 @@ func (n *Node) broadcastVoteRequestRPC() {
 			}
 			fmt.Printf("Node %d -> RequestVote to %d SUCCEEDED: %v\n", n.Id, id, resp)
 			
+			n.Mu.Lock()
 			if n.State == Candidate {
 				fmt.Printf("Node %d received vote response from %d as %v (term %d)\n", n.Id, id, resp.VoteGranted, resp.Term)
 				n.Inbox <- VoteResponse{
@@ -40,6 +41,7 @@ func (n *Node) broadcastVoteRequestRPC() {
 					Granted: resp.VoteGranted,
 				}
 			}
+			n.Mu.Unlock()
 
 		}(id, client)
 	}
