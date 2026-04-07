@@ -43,11 +43,7 @@ func (n *Node) runCandidate() {
 		case <-n.ElectionTimer.C:
 			fmt.Printf("Node %d restarted election (term %d)\n", n.Id, n.CurrentTerm+1)
 
-			// Drain the timer channel if it fired between Stop and here.
-			if !n.ElectionTimer.Stop() {
-				<-n.ElectionTimer.C
-			}
-
+			// No drain needed — the channel was already consumed by this case.
 			votes, voters = startElection()
 			n.ResetElectionTimer()
 
