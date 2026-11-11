@@ -12,7 +12,7 @@ services:
       - PEERS=2@raft-node-2:50052,3@raft-node-3:50053,4@raft-node-4:50054
       - SELF_ADDR=raft-node-1:50051
     volumes:
-      - /home/kshitij/raft-data/node-1:/app/data
+      - ./raft-data/node-1:/app/data
     networks:
       - etcd-network
 
@@ -27,7 +27,7 @@ services:
       - PEERS=1@raft-node-1:50051,3@raft-node-3:50053,4@raft-node-4:50054
       - SELF_ADDR=raft-node-2:50052
     volumes:
-      - /home/kshitij/raft-data/node-2:/app/data
+      - ./raft-data/node-2:/app/data
     networks:
       - etcd-network
 
@@ -42,7 +42,7 @@ services:
       - PEERS=1@raft-node-1:50051,2@raft-node-2:50052,4@raft-node-4:50054
       - SELF_ADDR=raft-node-3:50053
     volumes:
-      - /home/kshitij/raft-data/node-3:/app/data
+      - ./raft-data/node-3:/app/data
     networks:
       - etcd-network
   
@@ -57,7 +57,7 @@ services:
       - PEERS=1@raft-node-1:50051,2@raft-node-2:50052,3@raft-node-3:50053
       - SELF_ADDR=raft-node-4:50054
     volumes:
-      - /home/kshitij/raft-data/node-4:/app/data
+      - ./raft-data/node-4:/app/data
     networks:
       - etcd-network
 
